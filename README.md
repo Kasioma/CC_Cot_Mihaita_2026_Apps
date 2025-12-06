@@ -15,7 +15,7 @@ No Lambda triggers are required. The attribute `custom:device_id` is included au
 
 ## 0. Prerequisites
 
-- AWS account with permissions to manage **Cognito**. Cognito is avaialble in AWS Free Tier account - https://portal.aws.amazon.com/gp/aws/developer/registration/index.html?refid=em_127222&p=free&c=hp2&z=1&target=_blank
+- AWS account with permissions to manage **Cognito**. Cognito is available in AWS Free Tier account - https://portal.aws.amazon.com/gp/aws/developer/registration/index.html?refid=em_127222&p=free&c=hp2&z=1&target=_blank
 - Region selected (e.g., `eu-central-1`).
 
 ## 1. Create the Cognito User Pool (New AWS Wizard)
@@ -29,7 +29,7 @@ AWS now uses a combined wizard for creating applications and their user pools.
 4. **Sign-in identifiers** -> check **Email**.
 5. Leave empty **Required attributes for sign-up**
 6. Under **Return URL**, set your frontend URL, e.g.:  
-   `http://localhost:3000` (this is for devlopment now - when ready you can use Azure/AWS URL of your frontend web app)
+   `http://localhost:3000` (this is for development)
 7. Finish the wizard by clicking **Create User Directory** to create:
    - The **User Pool**
    - A **Frontend App Client** (public, no secret)
@@ -98,7 +98,7 @@ Go to App clients -> select **my-spa-app** -> Login pages and make sure you have
 
 - OAuth grant types:
   - **Authorization code grant**
-- OpenID Connect scopes - anything else can be removed (e.g. phone):
+- OpenID Connect scopes - you may remove unnecessary ones (e.g., phone):
   - `openid`
   - `email`
   - `profile` -  important for having the custom attribute claim in the token
@@ -108,7 +108,7 @@ Go to App clients -> select **my-spa-app** -> Login pages and make sure you have
   - `http://localhost:3000`
 
 
-> **_NOTE:_** Note: this is the URL of local frontend. After finishing the development, you have to change with the one from Azure/AWS web apps.
+> **_NOTE:_** this is the URL of local frontend. After finishing the development, you have to change with the one from Azure/AWS web apps.
 
 Record:
 - **App Client ID**
@@ -119,14 +119,12 @@ Record:
 
 ### 5.1 Create a User
 1. Go to **User management -> Users -> Create user**.
-2. Provide email + set a temporary password. You can select: "Don't send an invitaiton", and put a fake email address (e.g. user@test.com).
-
-Then you can go to the new user and set under **User Attributes**:  `custom:device_id` with a proper device_id that you will use to test your filtering later.
+2. Provide email + set a temporary password. You can select: "Don't send an invitation", and provide a test email address (e.g. user@test.com).
 
 ### 5.2 Assign our custom attribute (device_id)
 1. Open the user.
 2. Go to **User Attributes** tab, press Edit.
-3. Add to the additional attributes:
+3. Add the following to the Additional attributes:
    - `custom:device_id` - proper device_id that you will use to test your filtering later (e.g. "E-001").
 
 ### 5.3 Assign to a Group
@@ -135,7 +133,7 @@ Then you can go to the new user and set under **User Attributes**:  `custom:devi
 3. Add to user group:
    - `user`
 
-Repeat the procedure for the admin user, but don't assign a device_id attribute since they will see everything :D.
+Repeat the procedure for the admin user, but do not assign a device_id attribute, since admins should see all devices.
 
 ## 6. Token Example
 
@@ -151,7 +149,7 @@ A typical Cognito ID token will contain:
 
 ## 7. Frontend Integration
 
-> **_NOTE:_**  You can find a working example of backend using Express framework under **frontend** folder
+> **_NOTE:_**  You can find a working example of frontend using React library under **frontend** folder
 
 Your React application must:
 
@@ -187,7 +185,7 @@ It only **verifies JWTs** issued to the frontend.
 https://cognito-idp.<region>.amazonaws.com/<user-pool-id>/.well-known/jwks.json
 ```
 
-3. read claims:
+3. Read claims:
    - `cognito:groups` -> to allow admin/user access
    - `custom:device_id` -> enforce per-device access
 
