@@ -1,4 +1,4 @@
-const { randomUUID } = require('crypto');
+const { randomUUID } = require("crypto");
 
 const LEVELS = {
   error: 0,
@@ -7,7 +7,7 @@ const LEVELS = {
   debug: 3,
 };
 
-const LOG_LEVEL = process.env.LOG_LEVEL || 'info';
+const LOG_LEVEL = process.env.LOG_LEVEL || "info";
 const ACTIVE_LEVEL = LEVELS[LOG_LEVEL] ?? LEVELS.info;
 
 function shouldLog(level) {
@@ -23,7 +23,7 @@ function readHeader(req, name) {
 }
 
 function getCorrelationId(req) {
-  return readHeader(req, 'x-correlation-id') || readHeader(req, 'x-request-id') || randomUUID();
+  return readHeader(req, "x-correlation-id") || readHeader(req, "x-request-id") || randomUUID();
 }
 
 function emit(context, level, event, fields = {}) {
@@ -38,12 +38,12 @@ function emit(context, level, event, fields = {}) {
     ...fields,
   };
 
-  if (level === 'error' && context.log.error) {
+  if (level === "error" && context.log.error) {
     context.log.error(JSON.stringify(entry));
     return;
   }
 
-  if (level === 'warn' && context.log.warn) {
+  if (level === "warn" && context.log.warn) {
     context.log.warn(JSON.stringify(entry));
     return;
   }
@@ -59,7 +59,7 @@ function startRequest(context, req, path) {
     startedAt: Date.now(),
   };
 
-  emit(context, 'info', 'request.start', {
+  emit(context, "info", "request.start", {
     correlationId: request.correlationId,
     method: request.method,
     path: request.path,
@@ -69,7 +69,7 @@ function startRequest(context, req, path) {
 }
 
 function finishRequest(context, request, status) {
-  emit(context, 'info', 'request.end', {
+  emit(context, "info", "request.end", {
     correlationId: request.correlationId,
     method: request.method,
     path: request.path,
@@ -84,7 +84,7 @@ function maskDeviceId(deviceId) {
   }
 
   if (deviceId.length <= 4) {
-    return '***';
+    return "***";
   }
 
   return `${deviceId.slice(0, 2)}***${deviceId.slice(-2)}`;

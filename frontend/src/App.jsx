@@ -70,9 +70,7 @@ function App() {
 
   if (auth.error) {
     return (
-      <div style={{ padding: 20, color: "red" }}>
-        Encountering error... {auth.error.message}
-      </div>
+      <div style={{ padding: 20, color: "red" }}>Encountering error... {auth.error.message}</div>
     );
   }
 
@@ -108,9 +106,7 @@ function App() {
       {auth.isAuthenticated && (
         <>
           <h2>Tokens</h2>
-          <pre style={{ background: "#eee", padding: "10px" }}>
-            ID Token: {auth.user?.id_token}
-          </pre>
+          <pre style={{ background: "#eee", padding: "10px" }}>ID Token: {auth.user?.id_token}</pre>
 
           <h2>/api/profile response</h2>
           {loadingProfile ? (

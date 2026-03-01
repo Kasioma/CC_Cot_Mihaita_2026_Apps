@@ -6,6 +6,10 @@ Student demo project for:
 - Azure Functions backend JWT verification
 - Authorization with Cognito groups (`admin`, `user`) and `custom:device_id`
 
+## Architecture
+
+![](images/0-p3-overview.png "Authorization Flows")
+
 ## Table of Contents
 
 - [Mandatory setup](#mandatory-setup)
@@ -96,14 +100,11 @@ curl -i http://localhost:3001/api/profile
 Expected result for `/api/profile` without token: `401 Unauthorized`.
 
 10. Publish images after everything is working:
-   - Commit and push to `main`.
-   - GitHub Actions workflow `.github/workflows/docker-publish.yml` will publish:
-     - `<DOCKERHUB_USERNAME>/tucn-cc-backend-api:sha-<commit>`
-     - `<DOCKERHUB_USERNAME>/tucn-cc-frontend:sha-<commit>`
 
-## Architecture
-
-![](images/0-p3-overview.png "Authorization Flows")
+- Commit and push to `main`.
+- GitHub Actions workflow `.github/workflows/docker-publish.yml` will publish:
+  - `<DOCKERHUB_USERNAME>/tucn-cc-backend-api:sha-<commit>`
+  - `<DOCKERHUB_USERNAME>/tucn-cc-frontend:sha-<commit>`
 
 ## Backend API
 
@@ -123,24 +124,24 @@ Backend code details: [`backend/README.md`](backend/README.md)
 
 ### Backend (`backend/.env`)
 
-| Variable | Required | Example | Purpose |
-| --- | --- | --- | --- |
-| `COGNITO_REGION` | Yes | `eu-central-1` | Cognito region for issuer/JWKS URL |
-| `COGNITO_USER_POOL_ID` | Yes | `eu-central-1_example` | User pool used to validate tokens |
-| `COGNITO_CLIENT_ID` | Recommended | `your-app-client-id` | Audience/client validation |
-| `CORS_ORIGIN` | Yes | `http://localhost:3000` | Allowed frontend origin |
+| Variable               | Required    | Example                 | Purpose                            |
+| ---------------------- | ----------- | ----------------------- | ---------------------------------- |
+| `COGNITO_REGION`       | Yes         | `eu-central-1`          | Cognito region for issuer/JWKS URL |
+| `COGNITO_USER_POOL_ID` | Yes         | `eu-central-1_example`  | User pool used to validate tokens  |
+| `COGNITO_CLIENT_ID`    | Recommended | `your-app-client-id`    | Audience/client validation         |
+| `CORS_ORIGIN`          | Yes         | `http://localhost:3000` | Allowed frontend origin            |
 
 ### Frontend (`frontend/.env`)
 
-| Variable | Required | Example | Purpose |
-| --- | --- | --- | --- |
-| `REACT_APP_API_BASE` | Yes | `http://localhost:3001` | Backend API base URL |
-| `REACT_APP_COGNITO_AUTHORITY` | Yes | `https://cognito-idp.<region>.amazonaws.com/<user-pool-id>` | OIDC authority |
-| `REACT_APP_COGNITO_CLIENT_ID` | Yes | `your-app-client-id` | OIDC client id |
-| `REACT_APP_COGNITO_DOMAIN` | Yes | `https://your-domain.auth.<region>.amazoncognito.com` | Hosted UI domain |
-| `REACT_APP_OIDC_REDIRECT_URI` | Yes | `http://localhost:3000` | OIDC callback URL |
-| `REACT_APP_OIDC_SCOPE` | Recommended | `openid email profile` | Requested scopes |
-| `REACT_APP_LOGOUT_URI` | Yes | `http://localhost:3000` | Hosted UI logout redirect |
+| Variable                      | Required    | Example                                                     | Purpose                   |
+| ----------------------------- | ----------- | ----------------------------------------------------------- | ------------------------- |
+| `REACT_APP_API_BASE`          | Yes         | `http://localhost:3001`                                     | Backend API base URL      |
+| `REACT_APP_COGNITO_AUTHORITY` | Yes         | `https://cognito-idp.<region>.amazonaws.com/<user-pool-id>` | OIDC authority            |
+| `REACT_APP_COGNITO_CLIENT_ID` | Yes         | `your-app-client-id`                                        | OIDC client id            |
+| `REACT_APP_COGNITO_DOMAIN`    | Yes         | `https://your-domain.auth.<region>.amazoncognito.com`       | Hosted UI domain          |
+| `REACT_APP_OIDC_REDIRECT_URI` | Yes         | `http://localhost:3000`                                     | OIDC callback URL         |
+| `REACT_APP_OIDC_SCOPE`        | Recommended | `openid email profile`                                      | Requested scopes          |
+| `REACT_APP_LOGOUT_URI`        | Yes         | `http://localhost:3000`                                     | Hosted UI logout redirect |
 
 ## API examples
 
@@ -171,9 +172,7 @@ Backend code details: [`backend/README.md`](backend/README.md)
 {
   "role": "user",
   "device_id": "E-001",
-  "data": [
-    { "device_id": "E-001", "value": 10 }
-  ]
+  "data": [{ "device_id": "E-001", "value": 10 }]
 }
 ```
 

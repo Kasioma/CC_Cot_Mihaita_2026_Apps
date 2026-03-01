@@ -3,18 +3,18 @@ const {
   jsonResponseWithCorrelation,
   normalizeError,
   preflightResponse,
-} = require('../shared/auth');
-const { emit, finishRequest, maskDeviceId, startRequest } = require('../shared/logging');
+} = require("../shared/auth");
+const { emit, finishRequest, maskDeviceId, startRequest } = require("../shared/logging");
 
 const allData = [
-  { device_id: 'E-001', value: 10 },
-  { device_id: 'E-002', value: 20 },
+  { device_id: "E-001", value: 10 },
+  { device_id: "E-002", value: 20 },
 ];
 
 module.exports = async function data(context, req) {
-  const request = startRequest(context, req, '/api/data');
+  const request = startRequest(context, req, "/api/data");
 
-  if (req.method === 'OPTIONS') {
+  if (req.method === "OPTIONS") {
     context.res = preflightResponse(request.correlationId);
     finishRequest(context, request, 204);
     return;
@@ -26,59 +26,67 @@ module.exports = async function data(context, req) {
 
     let visibleData;
 
-    if (role === 'admin') {
+    if (role === "admin") {
       visibleData = allData;
-    } else if (role === 'user') {
+    } else if (role === "user") {
       if (!device_id) {
-        emit(context, 'warn', 'authz.denied', {
+        emit(context, "warn", "authz.denied", {
           correlationId: request.correlationId,
-          path: '/api/data',
-          code: 'missing_device_id',
+          path: "/api/data",
+          code: "missing_device_id",
           role,
         });
-        context.res = jsonResponseWithCorrelation(403, {
-          error: 'No device_id associated with this account',
-        }, request.correlationId);
+        context.res = jsonResponseWithCorrelation(
+          403,
+          {
+            error: "No device_id associated with this account",
+          },
+          request.correlationId
+        );
         finishRequest(context, request, 403);
         return;
       }
 
       visibleData = allData.filter((item) => item.device_id === device_id);
     } else {
-      emit(context, 'warn', 'authz.denied', {
+      emit(context, "warn", "authz.denied", {
         correlationId: request.correlationId,
-        path: '/api/data',
-        code: 'unknown_role',
+        path: "/api/data",
+        code: "unknown_role",
         role,
       });
       context.res = jsonResponseWithCorrelation(
         403,
-        { error: 'Insufficient permissions' },
+        { error: "Insufficient permissions" },
         request.correlationId
       );
       finishRequest(context, request, 403);
       return;
     }
 
-    emit(context, 'info', 'authz.allowed', {
+    emit(context, "info", "authz.allowed", {
       correlationId: request.correlationId,
-      path: '/api/data',
+      path: "/api/data",
       role,
       deviceIdMasked: maskDeviceId(device_id),
       returnedCount: visibleData.length,
     });
 
-    context.res = jsonResponseWithCorrelation(200, {
-      role,
-      device_id,
-      data: visibleData,
-    }, request.correlationId);
+    context.res = jsonResponseWithCorrelation(
+      200,
+      {
+        role,
+        device_id,
+        data: visibleData,
+      },
+      request.correlationId
+    );
     finishRequest(context, request, 200);
   } catch (error) {
     const normalized = normalizeError(error);
-    emit(context, normalized.status >= 500 ? 'error' : 'warn', 'auth.failed', {
+    emit(context, normalized.status >= 500 ? "error" : "warn", "auth.failed", {
       correlationId: request.correlationId,
-      path: '/api/data',
+      path: "/api/data",
       code: normalized.code,
       reason: normalized.logMessage,
     });
