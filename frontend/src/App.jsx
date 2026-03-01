@@ -78,7 +78,7 @@ function App() {
 
   return (
     <div style={{ padding: "20px", fontFamily: "Arial", maxWidth: "900px" }}>
-      <h1>Cognito + Express Demo (react-oidc-context)</h1>
+      <h1>Cognito + Azure Functions Demo (react-oidc-context)</h1>
 
       {error && (
         <div style={{ color: "red", marginBottom: "10px" }}>

@@ -1,0 +1,21 @@
+services:
+  backend:
+    platform: linux/amd64
+    build:
+      context: ./backend
+    image: tucn-cc-backend-api-local
+    env_file:
+      - ./backend/.env
+    ports:
+      - "3001:80"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+    image: tucn-cc-frontend-local
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+    restart: unless-stopped
