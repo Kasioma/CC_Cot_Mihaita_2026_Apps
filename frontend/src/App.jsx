@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "react-oidc-context";
 import { API_BASE, COGNITO_DOMAIN, LOGOUT_URI, OIDC_CONFIG } from "./config";
 import "./App.css";
+import DataTable from "../components/DataTable";
 
 function App() {
   const auth = useAuth();
@@ -173,14 +174,7 @@ function App() {
             </section>
 
             <section className="card card-wide">
-              <h2>Data API Response</h2>
-              {loadingData ? (
-                <p className="muted">Loading data...</p>
-              ) : dataResponse ? (
-                <pre className="code-block">{JSON.stringify(dataResponse, null, 2)}</pre>
-              ) : (
-                <p className="muted">No data loaded yet.</p>
-              )}
+              <DataTable dataResponse={dataResponse} loading={loadingData} />
             </section>
           </div>
         )}

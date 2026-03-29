@@ -1,3 +1,6 @@
+const fs = require("fs");
+const path = require("path");
+const { parse } = require("csv-parse/sync");
 const {
   authenticate,
   jsonResponseWithCorrelation,
@@ -6,10 +9,17 @@ const {
 } = require("../shared/auth");
 const { emit, finishRequest, maskDeviceId, startRequest } = require("../shared/logging");
 
-const allData = [
-  { device_id: "E-001", value: 10 },
-  { device_id: "E-002", value: 20 },
-];
+function loadAllData() {
+  const filePath = path.join(__dirname, "..", "docs", "datasets", "energy_usage_large.csv");
+  
+  console.log("CSV PATH:", filePath);
+  const fileContent = fs.readFileSync(filePath, "utf-8");
+
+  return parse(fileContent, {
+    columns: true,
+    skip_empty_lines: true,
+  });
+}
 
 module.exports = async function data(context, req) {
   const request = startRequest(context, req, "/api/data");
@@ -23,6 +33,8 @@ module.exports = async function data(context, req) {
   try {
     const auth = await authenticate(req);
     const { role, device_id } = auth.claims;
+
+    const allData = loadAllData();
 
     let visibleData;
 

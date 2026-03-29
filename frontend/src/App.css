@@ -174,7 +174,10 @@ h2 {
   color: #fff;
   background: linear-gradient(145deg, var(--accent), #169989);
   cursor: pointer;
-  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
 }
 
 .btn:hover {

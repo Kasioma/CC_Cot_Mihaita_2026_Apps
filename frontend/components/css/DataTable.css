@@ -1,0 +1,32 @@
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+
+.data-table th,
+.data-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.data-table th {
+  font-weight: 600;
+  color: #aaa;
+}
+
+.data-table tr:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.badge {
+  background: #1f2937;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}

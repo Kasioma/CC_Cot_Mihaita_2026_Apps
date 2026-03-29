@@ -11,5 +11,6 @@ COPY package*.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 
 COPY . .
+COPY docs docs
 
 EXPOSE 80
