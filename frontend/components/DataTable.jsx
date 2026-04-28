@@ -5,7 +5,6 @@ function DataTable({ dataResponse, loading }) {
   const [selectedDevice, setSelectedDevice] = useState("ALL");
   const [devices, setDevices] = useState([]);
 
-  // Extract unique device IDs
   useEffect(() => {
     if (!dataResponse?.data) return;
 
@@ -14,7 +13,6 @@ function DataTable({ dataResponse, loading }) {
     setDevices(uniqueDevices);
   }, [dataResponse]);
 
-  // Filtered data based on selection
   const filteredData = useMemo(() => {
     if (!dataResponse?.data) return [];
 
@@ -34,7 +32,6 @@ function DataTable({ dataResponse, loading }) {
         )}
       </div>
 
-      {/* Dropdown filter */}
       {dataResponse?.role === "admin" && (
         <div style={{ marginBottom: "12px" }}>
           <label>
