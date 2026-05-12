@@ -1,9 +1,6 @@
-name: Publish Docker Images
+name: Publish + Deploy Docker Images to Azure (Lab02)
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 permissions:
@@ -11,6 +8,44 @@ permissions:
   id-token: write
 
 jobs:
+  validate-deploy-config:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check required Docker Hub and Azure settings
+        shell: bash
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+          AZURE_APP_SERVICE_NAME: ${{ vars.AZURE_APP_SERVICE_NAME }}
+          AZURE_FUNCTION_APP_NAME: ${{ vars.AZURE_FUNCTION_APP_NAME }}
+          REACT_APP_API_BASE: ${{ vars.REACT_APP_API_BASE }}
+          REACT_APP_COGNITO_AUTHORITY: ${{ vars.REACT_APP_COGNITO_AUTHORITY }}
+          REACT_APP_COGNITO_CLIENT_ID: ${{ vars.REACT_APP_COGNITO_CLIENT_ID }}
+          REACT_APP_COGNITO_DOMAIN: ${{ vars.REACT_APP_COGNITO_DOMAIN }}
+          REACT_APP_OIDC_REDIRECT_URI: ${{ vars.REACT_APP_OIDC_REDIRECT_URI }}
+          REACT_APP_OIDC_SCOPE: ${{ vars.REACT_APP_OIDC_SCOPE }}
+          REACT_APP_LOGOUT_URI: ${{ vars.REACT_APP_LOGOUT_URI }}
+        run: |
+          missing=0
+          for name in \
+            DOCKERHUB_USERNAME DOCKERHUB_TOKEN \
+            AZURE_CLIENT_ID AZURE_TENANT_ID AZURE_SUBSCRIPTION_ID \
+            AZURE_RESOURCE_GROUP AZURE_APP_SERVICE_NAME AZURE_FUNCTION_APP_NAME \
+            REACT_APP_API_BASE REACT_APP_COGNITO_AUTHORITY REACT_APP_COGNITO_CLIENT_ID \
+            REACT_APP_COGNITO_DOMAIN REACT_APP_OIDC_REDIRECT_URI REACT_APP_OIDC_SCOPE REACT_APP_LOGOUT_URI; do
+            if [ -z "${!name:-}" ]; then
+              echo "::error title=Missing setting::$name is required for docker publish and Azure deploy"
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            exit 1
+          fi
+
   check-backend:
     runs-on: ubuntu-latest
     defaults:
@@ -45,7 +80,7 @@ jobs:
           cache: npm
           cache-dependency-path: frontend/package-lock.json
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --include=optional
       - name: Run tests
         env:
           CI: true
@@ -56,6 +91,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     needs:
+      - validate-deploy-config
       - check-backend
       - check-frontend
     strategy:
@@ -145,14 +181,14 @@ jobs:
           az webapp config container set \
             --name "${{ vars.AZURE_APP_SERVICE_NAME }}" \
             --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" \
-            --docker-custom-image-name "${{ secrets.DOCKERHUB_USERNAME }}/tucn-cc-frontend:${{ steps.tag.outputs.value }}"
+            --container-image-name "${{ secrets.DOCKERHUB_USERNAME }}/tucn-cc-frontend:${{ steps.tag.outputs.value }}"
 
       - name: Update Function App container image
         run: |
           az functionapp config container set \
             --name "${{ vars.AZURE_FUNCTION_APP_NAME }}" \
             --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" \
-            --docker-custom-image-name "${{ secrets.DOCKERHUB_USERNAME }}/tucn-cc-backend-api:${{ steps.tag.outputs.value }}"
+            --image "${{ secrets.DOCKERHUB_USERNAME }}/tucn-cc-backend-api:${{ steps.tag.outputs.value }}"
 
       - name: Restart services to pull new images
         run: |
