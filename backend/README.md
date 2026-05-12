@@ -21,7 +21,7 @@ Minimal Node.js Azure Functions backend used by students to learn:
 - `host.json` -> Azure Functions host configuration
 
 ## Local (Docker)
-
+ 
 From repo root:
 
 ```bash
